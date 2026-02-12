@@ -74,6 +74,18 @@ pipeline {
                 script {
 
                     sh '''
+                    echo "=== Debug SSH ==="
+                    whoami
+                    id
+                    ls -la ~/.ssh/ || true
+                    cat ~/.ssh/jenkins.pub || true
+                    ssh-keygen -l -f ~/.ssh/jenkins || true
+                
+                    echo "=== Intentando SSH ==="
+                    ssh -v -i ~/.ssh/jenkins -o StrictHostKeyChecking=no debian@nymeria.pingamarina.site "echo 'SSH successful'"
+                
+
+
                     ssh -o StrictHostKeyChecking=no debian@nymeria.pingamarina.site << 'EOF'
                     
                     cd /home/debian/Proyecto-CI-CD-Ejercicio2
