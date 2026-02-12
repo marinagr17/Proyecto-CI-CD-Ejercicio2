@@ -85,7 +85,10 @@ pipeline {
                     
                     # Esperar a que los servicios estén listos
                     sleep 10
-                        
+                    
+                    git clone https://github.com/marinagr17/Proyecto-CI-CD-Ejercicio2.git
+                    cd "Proyecto-CI-CD-Ejercicio2" 
+
                     # Copiar el archivo solo si no existe
                     if [ ! -f "$DEST_CONF" ]; then
                         sudo cp jenkins "$DEST_CONF"
