@@ -74,7 +74,7 @@ pipeline {
                 script {
 
                     sh '''
-                    ssh -v -i ~/.ssh/jenkins -o StrictHostKeyChecking=no debian@nymeria.pingamarina.site << 'EOF'
+                    ssh -v -i ~/.ssh/jenkins -o StrictHostKeyChecking=no debian@nymeria.pingamarina.site
                     cd /home/debian/Proyecto-CI-CD-Ejercicio2
 
                     docker pull marinagr17/django_tutorial:latest
@@ -100,7 +100,6 @@ pipeline {
                     sudo systemctl reload nginx
 
                     docker compose up -d
-                    EOF
                     '''    
                  }               
             }
