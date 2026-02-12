@@ -79,7 +79,7 @@ pipeline {
 
                     docker pull marinagr17/django_tutorial:latest
 
-                    docker compose up -d
+                    docker compose up -d --force-recreate --no-deps
                     sleep 10
 
                     # clonar repositorio
