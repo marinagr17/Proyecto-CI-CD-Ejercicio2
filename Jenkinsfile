@@ -75,36 +75,31 @@ pipeline {
 
                     sh '''
                     ssh -v -i ~/.ssh/jenkins -o StrictHostKeyChecking=no debian@nymeria.pingamarina.site << 'EOF'
-                    
-                    cd /home/debian/"Proyecto-CI-CD-Ejercicio2"
-                
-                    docker pull marinagr17/django_tutorial:latest
-                        
-                    # Primera ejecución de docker-compose
-                    docker compose up -d
-                    
-                    # Esperar a que los servicios estén listos
-                    sleep 10
-                    
-                    git clone https://github.com/marinagr17/Proyecto-CI-CD-Ejercicio2.git
-                    cd Proyecto-CI-CD-Ejercicio2/ 
+                    cd /home/debian/Proyecto-CI-CD-Ejercicio2
 
-                    # Copiar el archivo solo si no existe
-                    if [ ! -f /etc/nginx/sites-available/jenkins ]; then
-                        sudo cp jenkins /etc/nginx/sites-available/jenkins
+                    docker pull marinagr17/django_tutorial:latest
+
+                    docker compose up -d
+                    sleep 10
+
+                    # Solo clonar si no existe
+                    if [ ! -d Proyecto-CI-CD-Ejercicio2 ]; then
+                    git clone https://github.com/marinagr17/Proyecto-CI-CD-Ejercicio2.git
                     fi
 
-                    # Crear el enlace simbólico solo si no existe
+                    # Copiar config nginx solo si no existe
+                    if [ ! -f /etc/nginx/sites-available/jenkins ]; then
+                        sudo cp /home/debian/Proyecto-CI-CD-Ejercicio2/jenkins /etc/nginx/sites-available/jenkins
+                    fi
+
+                    # Crear enlace solo si no existe
                     if [ ! -L /etc/nginx/sites-enabled/jenkins ]; then
                         sudo ln -s /etc/nginx/sites-available/jenkins /etc/nginx/sites-enabled/jenkins
                     fi
-                    
-                    # Recargar nginx con la nueva configuración
-                    sudo systemctl reload nginx
-                        
-                    # Segunda ejecución de docker-compose (por si es necesario reiniciar)
-                    docker compose up -d    
 
+                    sudo systemctl reload nginx
+
+                    docker compose up -d
                     EOF
                     '''    
                  }               
