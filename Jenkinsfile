@@ -77,7 +77,7 @@ pipeline {
                     ssh -v -i ~/.ssh/jenkins -o StrictHostKeyChecking=no debian@nymeria.pingamarina.site <<'EOF'
                     cd /home/debian/Proyecto-CI-CD-Ejercicio2
 
-                    docker pull marinagr17/django_tutorial:latest
+                    docker pull marinagr17/dockerci-cd:latest
 
                     docker compose up -d --force-recreate --no-deps
                     sleep 10
