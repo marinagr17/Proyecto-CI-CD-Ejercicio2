@@ -9,6 +9,7 @@ pipeline {
     environment {
         IMAGEN = "marinagr17/dockerci-cd"
         USUARIO = credentials('USER_DOCKERHUB')
+        SSH = credentials('JENKINS_SSH')
     }
     
     stages {
@@ -63,6 +64,41 @@ pipeline {
                 docker rmi ${IMAGEN}:${BUILD_NUMBER} 2>/dev/null || true
                 docker rmi ${IMAGEN}:latest 2>/dev/null || true
                 '''
+            }
+        }
+
+        stage("Deployment") {
+            agent any
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/marinagr17/Proyecto-CI-CD-Ejercicio2.git']]])
+                
+                script {
+                        sh '''
+                        ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no debian@nymeria.pingamarina.site << 'EOF'
+                        
+                        cd /home/debian/Proyecto-CI-CD-Ejercicio2
+                        
+                        docker pull marinagr17/django_tutorial:latest
+                        
+                        # Primera ejecución de docker-compose
+                        docker compose up -d
+                        
+                        # Esperar a que los servicios estén listos
+                        sleep 10
+                        
+                        # Configurar el proxy inverso (copiar configuración desde jenkins)
+                        sudo cp jenkins /etc/nginx/sites-availables/jenkins || true
+                        sudo ln -s /etc/nginx/sites-availables/jenkins /etc/nginx/sites-enabled/ || true
+                    
+                        # Recargar nginx con la nueva configuración
+                        sudo systemctl reload nginx
+                        
+                        # Segunda ejecución de docker-compose (por si es necesario reiniciar)
+                        docker compose up -d    
+
+                        EOF
+                        '''
+                 }               
             }
         }
     }
