@@ -71,35 +71,33 @@ pipeline {
             steps {
                 checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/marinagr17/Proyecto-CI-CD-Ejercicio2.git']]])
                 
-                withCredentials([sshUserPrivateKey(credentialsId: 'JENKINS_SSH', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
-
                 script {
-                        sh '''
-                        ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no debian@nymeria.pingamarina.site << 'EOF'
-                        
-                        cd /home/debian/Proyecto-CI-CD-Ejercicio2
 
-                        docker pull marinagr17/django_tutorial:latest
-                        
-                        # Primera ejecución de docker-compose
-                        docker compose up -d
-                        
-                        # Esperar a que los servicios estén listos
-                        sleep 10
-                        
-                        # Configurar el proxy inverso (copiar configuración desde jenkins)
-                        sudo cp jenkins /etc/nginx/sites-availables/jenkins || true
-                        sudo ln -s /etc/nginx/sites-availables/jenkins /etc/nginx/sites-enabled/ || true
+                    sh '''
+                    ssh -o StrictHostKeyChecking=no debian@nymeria.pingamarina.site << 'EOF'
                     
-                        # Recargar nginx con la nueva configuración
-                        sudo systemctl reload nginx
+                    cd /home/debian/Proyecto-CI-CD-Ejercicio2
+                
+                    docker pull marinagr17/django_tutorial:latest
                         
-                        # Segunda ejecución de docker-compose (por si es necesario reiniciar)
-                        docker compose up -d    
+                    # Primera ejecución de docker-compose
+                    docker compose up -d
+                    
+                    # Esperar a que los servicios estén listos
+                    sleep 10
+                        
+                    # Configurar el proxy inverso (copiar configuración desde jenkins)
+                    sudo cp jenkins /etc/nginx/sites-sites-available/jenkins || true
+                    sudo ln -s /etc/nginx/sites-sites-available/jenkins /etc/nginx/sites-enabled/ || true
+                    
+                    # Recargar nginx con la nueva configuración
+                    sudo systemctl reload nginx
+                        
+                    # Segunda ejecución de docker-compose (por si es necesario reiniciar)
+                    docker compose up -d    
 
-                        EOF
-                        '''
-                    }    
+                    EOF
+                    '''    
                  }               
             }
         }
