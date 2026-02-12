@@ -75,17 +75,21 @@ pipeline {
 
                     sh '''
                     ssh -v -i ~/.ssh/jenkins -o StrictHostKeyChecking=no debian@nymeria.pingamarina.site <<'EOF'
-                    cd /home/debian/Proyecto-CI-CD-Ejercicio2
+                    REPO_DIR="/home/debian/Proyecto-CI-CD-Ejercicio2"
+                    REPO_URL="https://github.com/marinagr17/Proyecto-CI-CD-Ejercicio2.git"
+
+                    if [ -d "$REPO_DIR/.git" ]; then
+                        cd "$REPO_DIR"
+                        git pull --ff-only origin main
+                    else
+                        git clone "$REPO_URL" "$REPO_DIR"
+                        cd "$REPO_DIR"
+                    fi
 
                     docker pull marinagr17/dockerci-cd:latest
 
                     docker compose up -d --force-recreate --no-deps
                     sleep 10
-
-                    # clonar repositorio
-                    
-                    git clone https://github.com/marinagr17/Proyecto-CI-CD-Ejercicio2.git
-                    
 
                     # Copiar config nginx
                     
