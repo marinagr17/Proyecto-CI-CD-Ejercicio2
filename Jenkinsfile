@@ -87,11 +87,11 @@ pipeline {
                     sleep 10
                     
                     git clone https://github.com/marinagr17/Proyecto-CI-CD-Ejercicio2.git
-                    cd "Proyecto-CI-CD-Ejercicio2" 
+                    cd Proyecto-CI-CD-Ejercicio2/ 
 
                     # Copiar el archivo solo si no existe
-                    if [ ! -f "$DEST_CONF" ]; then
-                        sudo cp jenkins "$DEST_CONF"
+                    if [ ! -f /etc/nginx/sites-available/jenkins ]; then
+                        sudo cp jenkins /etc/nginx/sites-available/jenkins
                     fi
 
                     # Crear el enlace simbólico solo si no existe
