@@ -1,7 +1,7 @@
 version: '4.2'
 services:
   web:
-    image: marinagr17/django_tutorial:${VERSION_DT}
+    image: marinagr17/dockerci-cd:${VERSION_DT}
     restart: always
     environment:
       DB_HOST: ${DB_HOST}
