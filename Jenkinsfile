@@ -9,7 +9,6 @@ pipeline {
     environment {
         IMAGEN = "marinagr17/dockerci-cd"
         USUARIO = credentials('USER_DOCKERHUB')
-        SSH = credentials('JENKINS_SSH')
     }
     
     stages {
@@ -72,12 +71,14 @@ pipeline {
             steps {
                 checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/marinagr17/Proyecto-CI-CD-Ejercicio2.git']]])
                 
+                withCredentials([sshUserPrivateKey(credentialsId: 'JENKINS_SSH', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
+
                 script {
                         sh '''
                         ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no debian@nymeria.pingamarina.site << 'EOF'
                         
                         cd /home/debian/Proyecto-CI-CD-Ejercicio2
-                        
+
                         docker pull marinagr17/django_tutorial:latest
                         
                         # Primera ejecución de docker-compose
@@ -98,6 +99,7 @@ pipeline {
 
                         EOF
                         '''
+                    }    
                  }               
             }
         }
