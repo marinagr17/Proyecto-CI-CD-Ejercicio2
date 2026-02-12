@@ -76,7 +76,7 @@ pipeline {
                     sh '''
                     ssh -v -i ~/.ssh/jenkins -o StrictHostKeyChecking=no debian@nymeria.pingamarina.site << 'EOF'
                     
-                    cd /home/debian/Proyecto-CI-CD-Ejercicio2
+                    cd /home/debian/"Proyecto-CI-CD-Ejercicio2"
                 
                     docker pull marinagr17/django_tutorial:latest
                         
@@ -86,9 +86,15 @@ pipeline {
                     # Esperar a que los servicios estén listos
                     sleep 10
                         
-                    # Configurar el proxy inverso (copiar configuración desde jenkins)
-                    sudo cp jenkins /etc/nginx/sites-sites-available/jenkins || true
-                    sudo ln -s /etc/nginx/sites-sites-available/jenkins /etc/nginx/sites-enabled/ || true
+                    # Copiar el archivo solo si no existe
+                    if [ ! -f "$DEST_CONF" ]; then
+                        sudo cp jenkins "$DEST_CONF"
+                    fi
+
+                    # Crear el enlace simbólico solo si no existe
+                    if [ ! -L /etc/nginx/sites-enabled/jenkins ]; then
+                        sudo ln -s /etc/nginx/sites-available/jenkins /etc/nginx/sites-enabled/jenkins
+                    fi
                     
                     # Recargar nginx con la nueva configuración
                     sudo systemctl reload nginx
