@@ -82,15 +82,15 @@ pipeline {
                     docker compose up -d
                     sleep 10
 
-                    # Solo clonar si no existe
-                    if [ ! -d Proyecto-CI-CD-Ejercicio2 ]; then
+                    # clonar repositorio
+                    
                     git clone https://github.com/marinagr17/Proyecto-CI-CD-Ejercicio2.git
-                    fi
+                    
 
-                    # Copiar config nginx solo si no existe
-                    if [ ! -f /etc/nginx/sites-available/jenkins ]; then
+                    # Copiar config nginx
+                    
                         sudo cp /home/debian/Proyecto-CI-CD-Ejercicio2/jenkins /etc/nginx/sites-available/jenkins
-                    fi
+                    
 
                     # Crear enlace solo si no existe
                     if [ ! -L /etc/nginx/sites-enabled/jenkins ]; then
